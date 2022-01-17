@@ -18,7 +18,7 @@ public interface AdotanteService {
 	
 	public void deleteAdotante(String adotanteId);
 	
-	default boolean isEnderecoInvalido(Endereco endereco) {
+	default boolean isInvalidEndereco(Endereco endereco) {
 		return endereco == null
 				|| endereco.getLogradouro() == null
 				|| StringUtils.isBlank(endereco.getNome())

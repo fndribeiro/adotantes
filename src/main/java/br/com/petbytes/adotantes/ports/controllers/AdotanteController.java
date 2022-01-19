@@ -2,6 +2,7 @@ package br.com.petbytes.adotantes.ports.controllers;
 
 import java.net.URI;
 import java.text.MessageFormat;
+import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,7 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.petbytes.adotantes.application.dtos.AdotanteDTO;
 import br.com.petbytes.adotantes.application.service.AdotanteService;
+import br.com.petbytes.adotantes.application.service.client.OngFeignClient;
 import br.com.petbytes.adotantes.domain.entities.Adotante;
+import br.com.petbytes.adotantes.domain.entities.Pet;
 import br.com.petbytes.adotantes.ports.controllers.exceptions.NotFoundException;
 import io.micrometer.core.instrument.util.StringUtils;
 
@@ -24,11 +27,13 @@ import io.micrometer.core.instrument.util.StringUtils;
 public class AdotanteController {
 	
 	private AdotanteService service;
+	private OngFeignClient ongClient;
 	
 	private final String notFoundMessage = "Adotante not for found for the given id.";
 
-	public AdotanteController(AdotanteService service) {
+	public AdotanteController(AdotanteService service, OngFeignClient ongClient) {
 		this.service = service;
+		this.ongClient = ongClient;
 	}
 	
 	@PostMapping
@@ -70,6 +75,14 @@ public class AdotanteController {
 		}
 		
 		return ResponseEntity.ok(adotante);
+	}
+	
+	@GetMapping("/pets/{id}")
+	ResponseEntity<List<Pet>> findAllPetsByOngId(@PathVariable(value = "id") String id) {
+		
+		List<Pet> pets = ongClient.findAllPetsByOngId(id);
+		
+		return ResponseEntity.ok(pets);
 	}
 	
 	@PutMapping("/{id}")

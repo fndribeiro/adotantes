@@ -2,6 +2,7 @@ package br.com.petbytes.adotantes.ports.controllers;
 
 import java.net.URI;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,7 @@ import br.com.petbytes.adotantes.application.service.client.OngFeignClient;
 import br.com.petbytes.adotantes.domain.entities.Adotante;
 import br.com.petbytes.adotantes.domain.entities.Pet;
 import br.com.petbytes.adotantes.ports.controllers.exceptions.NotFoundException;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.micrometer.core.instrument.util.StringUtils;
 
 @RestController
@@ -78,9 +80,21 @@ public class AdotanteController {
 	}
 	
 	@GetMapping("/pets/{id}")
+	// @Retry(name = "findPetsByOngIdRetry", fallbackMethod = "findPetsByOngIdFallBack")
+	// @RateLimiter(name = "findPetsByOngIdRateLimiter", fallbackMethod = "findPetsByOngIdFallBack")
+	// @Bulkhead(name = "findPetsByOngIdBulkhead", fallbackMethod = "findPetsByOngIdFallBack")
+	@CircuitBreaker(name = "findPetsByOngIdCircuitBreaker", fallbackMethod = "findPetsByOngIdFallBack")
 	ResponseEntity<List<Pet>> findAllPetsByOngId(@PathVariable(value = "id") String id) {
 		
 		List<Pet> pets = ongClient.findAllPetsByOngId(id);
+		
+		return ResponseEntity.ok(pets);
+	}
+	
+	@SuppressWarnings("unused")
+	private ResponseEntity<List<Pet>> findPetsByOngIdFallBack(@PathVariable(value = "id") String id, Throwable throwable) {
+		
+		List<Pet> pets = new ArrayList<Pet>();
 		
 		return ResponseEntity.ok(pets);
 	}

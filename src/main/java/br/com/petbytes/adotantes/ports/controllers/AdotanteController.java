@@ -5,6 +5,8 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,6 +34,8 @@ public class AdotanteController {
 	private OngFeignClient ongClient;
 	
 	private final String notFoundMessage = "Adotante not for found for the given id.";
+	
+	private final Logger logger = LoggerFactory.getLogger(AdotanteController.class);
 
 	public AdotanteController(AdotanteService service, OngFeignClient ongClient) {
 		this.service = service;
@@ -86,6 +90,8 @@ public class AdotanteController {
 	@CircuitBreaker(name = "findPetsByOngIdCircuitBreaker", fallbackMethod = "findPetsByOngIdFallBack")
 	ResponseEntity<List<Pet>> findAllPetsByOngId(@PathVariable(value = "id") String id) {
 		
+		logger.info("Requesting list of pets to ongs microservice. OngID: " + id);
+		
 		List<Pet> pets = ongClient.findAllPetsByOngId(id);
 		
 		return ResponseEntity.ok(pets);
@@ -93,6 +99,8 @@ public class AdotanteController {
 	
 	@SuppressWarnings("unused")
 	private ResponseEntity<List<Pet>> findPetsByOngIdFallBack(@PathVariable(value = "id") String id, Throwable throwable) {
+		
+		logger.info("findAllPetsByOngId in fallback. Returning empty list of pets.");
 		
 		List<Pet> pets = new ArrayList<Pet>();
 		

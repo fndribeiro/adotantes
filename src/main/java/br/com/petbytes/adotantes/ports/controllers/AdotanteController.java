@@ -24,6 +24,7 @@ import br.com.petbytes.adotantes.domain.entities.Adotante;
 import br.com.petbytes.adotantes.domain.entities.Pet;
 import br.com.petbytes.adotantes.ports.controllers.exceptions.NotFoundException;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.util.StringUtils;
 
 @RestController
@@ -88,6 +89,7 @@ public class AdotanteController {
 	// @RateLimiter(name = "findPetsByOngIdRateLimiter", fallbackMethod = "findPetsByOngIdFallBack")
 	// @Bulkhead(name = "findPetsByOngIdBulkhead", fallbackMethod = "findPetsByOngIdFallBack")
 	@CircuitBreaker(name = "findPetsByOngIdCircuitBreaker", fallbackMethod = "findPetsByOngIdFallBack")
+	@Timed(value = "findAllPetsByOngId.time", description = "Time taken to return pets by ong id.")
 	ResponseEntity<List<Pet>> findAllPetsByOngId(@PathVariable(value = "id") String id) {
 		
 		logger.info("Requesting list of pets to ongs microservice. OngID: " + id);

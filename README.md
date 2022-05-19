@@ -5,7 +5,7 @@ The objective of this project is to implement microservice architecture with Jav
 
 This project has the following services:
 
-##### 1 - Sring Cloud ConfigServer (private repository):
+##### 1 - Sring Cloud ConfigServer (https://github.com/fndribeiro/petbytes-config-server):
 Spring Cloud Config provides server and client-side support for externalized configuration in a distributed
 system. With the Config Server you have a central place to manage external properties for applications
 across all environments. MongoDB server configuration is here for example.
